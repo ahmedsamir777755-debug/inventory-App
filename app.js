@@ -1,6 +1,4 @@
-alert("Inventory App Loaded");
-
-function loadExcel() {
+function loadFile() {
   const fileInput = document.getElementById("fileInput");
   const output = document.getElementById("output");
 
@@ -21,24 +19,29 @@ function loadExcel() {
 
     const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+    if (json.length === 0) {
+      output.innerHTML = "<p>الملف فاضي</p>";
+      return;
+    }
+
     let table = "<table>";
 
     json.forEach((row, index) => {
       table += "<tr>";
       row.forEach(cell => {
-        if (index === 0) {
-          table += `<th>${cell}</th>`;
-        } else {
-          table += `<td>${cell}</td>`;
-        }
+        table += index === 0
+          ? `<th>${cell ?? ""}</th>`
+          : `<td>${cell ?? ""}</td>`;
       });
       table += "</tr>";
     });
 
     table += "</table>";
-
     output.innerHTML = table;
   };
 
   reader.readAsArrayBuffer(file);
 }
+
+console.log("Inventory App Ready");
+
