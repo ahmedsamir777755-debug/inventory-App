@@ -1,9 +1,9 @@
-function loadFile() {
+window.loadFile = function () {
   const fileInput = document.getElementById("fileInput");
   const output = document.getElementById("output");
 
   if (!fileInput.files.length) {
-    alert("اختار ملف Excel الأول");
+    alert("Please choose an Excel file first");
     return;
   }
 
@@ -11,37 +11,50 @@ function loadFile() {
   const reader = new FileReader();
 
   reader.onload = function (e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
 
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
+      console.log("Sheets:", workbook.SheetNames);
 
-    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      // خُد أول شيت (عشان نضمن إنه يشتغل)
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
 
-    if (json.length === 0) {
-      output.innerHTML = "<p>الملف فاضي</p>";
-      return;
-    }
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    let table = "<table>";
+      if (rows.length === 0) {
+        output.innerHTML = "<b>No data found in sheet</b>";
+        return;
+      }
 
-    json.forEach((row, index) => {
-      table += "<tr>";
-      row.forEach(cell => {
-        table += index === 0
-          ? `<th>${cell ?? ""}</th>`
-          : `<td>${cell ?? ""}</td>`;
+      let html = "<table border='1' cellpadding='5'><tr>";
+
+      // Headers
+      rows[0].forEach(h => {
+        html += `<th>${h ?? ""}</th>`;
       });
-      table += "</tr>";
-    });
+      html += "</tr>";
 
-    table += "</table>";
-    output.innerHTML = table;
+      // Data
+      for (let i = 1; i < rows.length; i++) {
+        html += "<tr>";
+        rows[i].forEach(cell => {
+          html += `<td>${cell ?? ""}</td>`;
+        });
+        html += "</tr>";
+      }
+
+      html += "</table>";
+      output.innerHTML = html;
+
+    } catch (err) {
+      console.error(err);
+      alert("Error reading file, check console");
+    }
   };
 
   reader.readAsArrayBuffer(file);
-}
+};
 
-console.log("Inventory App Ready");
-
+console.log("App ready");
