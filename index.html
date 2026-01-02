@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Inventory Control</title>
 
-  <!-- Excel Library -->
+  <!-- XLSX library -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
@@ -12,36 +12,32 @@
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-
     button {
-      padding: 8px 15px;
-      margin-left: 10px;
-      cursor: pointer;
+      padding: 6px 12px;
+      margin-left: 5px;
     }
-
     table {
       border-collapse: collapse;
       margin-top: 20px;
       width: 100%;
     }
-
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 6px;
       text-align: left;
     }
-
     th {
       background: #f2f2f2;
     }
   </style>
 </head>
+
 <body>
 
   <h2>Inventory Control – Excel Upload</h2>
 
   <input type="file" id="fileInput" accept=".xlsx,.xls">
-  <button onclick="loadExcel()">Load File</button>
+  <button onclick="loadFile()">Load File</button>
 
   <div id="output"></div>
 
