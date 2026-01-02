@@ -2,51 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Inventory Test</title>
+  <title>Inventory Control</title>
 
-  <!-- XLSX Library -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       padding: 20px;
     }
-    button {
-      padding: 8px 15px;
-      margin-left: 10px;
-      cursor: pointer;
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
 
-<h2>Excel Upload Test</h2>
+<h2>Inventory Excel Upload</h2>
 
-<input type="file" id="fileInput" />
+<input type="file" id="fileInput" accept=".xlsx,.xls">
 <button onclick="loadFile()">Load File</button>
 
-<div id="output" style="margin-top:20px;font-weight:bold;"></div>
+<div id="table"></div>
 
 <script>
 function loadFile() {
-  alert("BUTTON CLICKED");
 
-  const input = document.getElementById("fileInput");
-  const output = document.getElementById("output");
-
-  if (!input.files.length) {
-    alert("No file selected");
+  const fileInput = document.getElementById("fileInput");
+  if (!fileInput.files.length) {
+    alert("اختار ملف الأول");
     return;
   }
 
   const reader = new FileReader();
 
-  reader.onload = function () {
-    output.innerHTML = "✅ File loaded successfully";
+  reader.onload = function(e) {
+
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    renderTable(json);
   };
 
-  reader.readAsArrayBuffer(input.files[0]);
+  reader.readAsArrayBuffer(fileInput.files[0]);
+}
+
+function renderTable(data) {
+  let html = "<table>";
+
+  data.forEach((row, index) => {
+    html += "<tr>";
+    row.forEach(cell => {
+      html += index === 0
+        ? `<th>${cell ?? ""}</th>`
+        : `<td>${cell ?? ""}</td>`;
+    });
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  document.getElementById("table").innerHTML = html;
 }
 </script>
 
